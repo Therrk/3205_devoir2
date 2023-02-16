@@ -1,6 +1,6 @@
 /*------------------------------------------------------*/
 /* Prog    : Tp2_IFT3205-2-4.c                          */
-/* Auteur  :                                            */
+/* Auteur  : Élie Leblanc                               */
 /* Date    : --/--/2010                                 */
 /* version :                                            */ 
 /* langage : C                                          */
@@ -41,6 +41,8 @@ int main(int argc,char **argv)
   int x0,y0;
   char BufSystVisuImg[100];
 
+  int half_width,half_length,tempr;
+
   //Constante
   length=512;
   width=512;
@@ -62,8 +64,36 @@ int main(int argc,char **argv)
   float** MatriceImg2=LoadImagePgm(NAME_IMG_IN2,&length,&width);
 
  
-  // .... .... .... .... .... .... ....
+  // Le code
+  MatriceImgR1 = MatriceImg1;
+  MatriceImgR2 = MatriceImg2;
+    FFTDD(MatriceImg1,MatriceImgI1, length,width);
+    FFTDD(MatriceImg2,MatriceImgI2, length,width);
 
+  Mod(MatriceImgM1,MatriceImgR1,MatriceImgI1, length,width);
+  Mod(MatriceImgM2,MatriceImgR2,MatriceImgI2, length,width);
+
+  // Pour rendre visible
+  Recal(MatriceImgM1, length,width);
+  Recal(MatriceImgM2, length,width);
+  Mult(MatriceImgM1,100,length,width);
+  Mult(MatriceImgM2,100,length,width);
+
+  // Pour centrer
+  half_length = length/2;
+  half_width = width/2;
+  for (i = 0; i < half_length; i++) {
+	  for (j = 0; j < half_width; j++) {
+	    SWAP(MatriceImgM1[i][j], MatriceImgM1[i+half_length][j+half_width]);
+	    SWAP(MatriceImgM1[i][j+half_width], MatriceImgM1[i+half_length][j]);
+	    SWAP(MatriceImgM2[i][j], MatriceImgM2[i+half_length][j+half_width]);
+	    SWAP(MatriceImgM2[i][j+half_width], MatriceImgM2[i+half_length][j]);
+    }
+  }
+
+  
+  MatriceImg2 = MatriceImgM2;
+  MatriceImg1 = MatriceImgM1;
 
   //Sauvegarde
   SaveImagePgm(NAME_IMG_OUT1,MatriceImg1,length,width);
