@@ -41,7 +41,8 @@ int main(int argc,char **argv)
   int x0,y0;
   char BufSystVisuImg[100];
 
-  int half_width,half_length,x,y,x_prime,y_prime;
+  int half_width,half_length,x_p,y_p, r_x, r_y;
+  float bot_avg, top_avg, pix_avg,x,y;
 
   //Constante
   length=512;
@@ -68,15 +69,21 @@ int main(int argc,char **argv)
   half_width = width/2;
   half_length = length/2;
   for (i = 0; i < length; i++) {
-	  for (j = 0; j < width; j++) {
-	   x_prime = half_length-i;
-	   y_prime = half_width-j; 
-	   x = (int)(x_prime*cos(Theta0) + y_prime*sin(Theta0));
-	   y = (int)(y_prime*cos(Theta0) - x_prime*sin(Theta0));
-	   y = y+half_width;
-	   x = x+half_length;
-	   if (x>=0&&x<length&&y>=0&&y<width) {
-	      MatriceImgM1[i][j]= MatriceImg1[x][y];
+    for (j = 0; j < width; j++) {
+ 
+	   x_p = half_width-i;
+	   y_p = half_length-j;
+	   x = (x_p*cos(Theta0) + y_p*sin(Theta0));
+	   y = (y_p*cos(Theta0) - x_p*sin(Theta0));
+	   x = x+half_width;
+	   y = y+half_length;
+	   r_x = (int)x;
+	   r_y = (int)y;
+	   if (r_y>=0&&r_y<length-1&&r_x>=0&&r_x<width-1) {
+	      bot_avg= MatriceImg1[r_x][r_y] + (x-r_x) * (MatriceImg1[r_x+1][r_y]-MatriceImg1[r_x][r_y]);
+	      top_avg = MatriceImg1[r_x][r_y+1] + (x-r_x) * (MatriceImg1[r_x+1][r_y+1]-MatriceImg1[r_x][r_y+1]);
+	      pix_avg = bot_avg + (y-r_y) * (bot_avg-top_avg);
+	      MatriceImgM1[i][j]= pix_avg;
       } else {
 	      MatriceImgM1[i][j]= 0;
       }
