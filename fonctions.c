@@ -2,7 +2,9 @@
 #include <stdio.h>
 
 void rotation(int length, int width, float angle, float ** mat_src, float ** mat_dst) {
-
+    // correction rotation dans la mauvaise direction
+    angle = -angle;
+    
     // Le code
     for (int i = 0; i < length; i++) {
         for (int j = 0; j < width; j++) {
