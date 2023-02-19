@@ -128,32 +128,28 @@ int main(int argc,char **argv)
     float** udem2_output = fmatrix_allocate_2d(length, width);
     rotation(length, width, best_theta, udem2_backup, udem2_output);
 
-    /* free(MatriceImg1); */
-    /* MatriceImg1 = MatriceImgM1; */
 
     /* //Sauvegarde */
      SaveImagePgm(NAME_IMG_OUT1,udem1_backup,length, width);
      SaveImagePgm(NAME_IMG_OUT2,udem2_output,length,width);
 
-    /* //Commande systeme: VISU */
-    /* strcpy(BufSystVisuImg,NAME_VISUALISER); */
-    /* strcat(BufSystVisuImg,NAME_IMG_OUT1); */
-    /* strcat(BufSystVisuImg,".pgm&"); */
-    /* printf(" %s",BufSystVisuImg); */
-    /* system(BufSystVisuImg); */
-    /* // strcpy(BufSystVisuImg,NAME_VISUALISER); */
+     //Commande systeme: VISU */
+     strcpy(BufSystVisuImg,NAME_VISUALISER);
+     strcat(BufSystVisuImg,NAME_IMG_OUT1);
+     strcat(BufSystVisuImg,".pgm&");
+     printf(" %s",BufSystVisuImg);
+     system(BufSystVisuImg);
+     strcpy(BufSystVisuImg,NAME_VISUALISER);
     
-    /* // strcat(BufSystVisuImg,NAME_IMG_OUT2); */
-    /* // strcat(BufSystVisuImg,".pgm&"); */
-    /* // printf(" %s",BufSystVisuImg); */
-    /* // system(BufSystVisuImg); */
+     strcat(BufSystVisuImg,NAME_IMG_OUT2);
+     strcat(BufSystVisuImg,".pgm&");
+     printf(" %s",BufSystVisuImg);
+     system(BufSystVisuImg);
 
 
     /* //==End========================================================= */
 
-    /* //Liberation memoire */
-    /* free_fmatrix_2d(MatriceImg1); */
     /* //retour sans probleme */
-    /* printf("\n C'est fini ... \n\n"); */
+    printf("\n C'est fini ... \n\n");
     return 0;
 }
