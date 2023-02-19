@@ -1,6 +1,6 @@
 /*------------------------------------------------------*/
 /* Prog    : Tp2_IFT3205-2-4.c                          */
-/* Auteur  : Élie Leblanc                               */
+/* Auteur  : Élie Leblanc, Justin Veilleux              */
 /* Date    : --/--/2010                                 */
 /* version :                                            */ 
 /* langage : C                                          */
@@ -46,10 +46,11 @@ int main(int argc,char **argv)
 
     float** udem1_r = LoadImagePgm(NAME_IMG_IN1, &length, &width);
     float** udem1_i = fmatrix_allocate_2d(length, width);
+    fmatrix_zero(length, width, udem1_i);
     FFTDD(udem1_r, udem1_i, length, width);
 
     float** udem1_mod = fmatrix_allocate_2d(length, width);
-
+    fmatrix_zero(length, width, udem1_mod);
     // On calcule le module de l'image 1 (F)
     fmatrix_module(length, width, udem1_r, udem1_i, udem1_mod);
 
@@ -59,19 +60,22 @@ int main(int argc,char **argv)
     float best_theta = -1;
 
     for (float theta = -PI / 16.0;theta < PI / 16;theta += 0.005) {
-        printf("theta: %f\n", theta);
         float** udem2_r = fmatrix_allocate_2d(length, width);
+        fmatrix_zero(length, width, udem2_r);
         fmatrix_move(length, width, udem2, udem2_r);
 
         float** udem2_r_rot = fmatrix_allocate_2d(length, width);
         float** udem2_i_rot = fmatrix_allocate_2d(length, width);
 
+        fmatrix_zero(length, width, udem2_r_rot);
+        fmatrix_zero(length, width, udem2_i_rot);
         rotation(length, width, theta, udem2_r, udem2_r_rot);
 
         FFTDD(udem2_r_rot, udem2_i_rot, length, width);
 
 
         float** udem2_mod = fmatrix_allocate_2d(length, width);
+        fmatrix_zero(length, width, udem2_mod);
         //On calcule le module de l'image 1 (F)
         fmatrix_module(length, width, udem2_r_rot, udem2_i_rot, udem2_mod);
 
@@ -80,19 +84,18 @@ int main(int argc,char **argv)
             for (int j = 0;j < width;j++) {
                 double diff = fabs(udem2_mod[i][j] - udem1_mod[i][j]);
                 epsilon += diff;
+
             }
-            printf("partial epslon: %f\n", epsilon);
+
         }
 
         if (epsilon < best_epsilon) {
             best_epsilon = epsilon;
             best_theta = theta;
         }
-        printf("epislon: %f\n", epsilon);
     }
 
     printf("best theta: %f\n", best_theta);
-
 
     /* free(MatriceImg1); */
     /* MatriceImg1 = MatriceImgM1; */

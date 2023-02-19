@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdio.h>
 
 void rotation(int length, int width, float angle, float ** mat_src, float ** mat_dst) {
 
@@ -76,11 +77,22 @@ void fmatrix_move(int length, int width, float ** src, float ** dst) {
 }
 
 void fmatrix_module(int length, int width, float ** r, float ** im, float ** dst) {
-        for (int i = 0;i < length;i++) {
+    for (int i = 0;i < length;i++) {
         for (int j = 0;j < width;j++) {
-            int real = r[i][j];
-            int ima = im[i][j];
+            float real = r[i][j];
+            float ima = im[i][j];
+            if (isnan(real) || isnan(ima)) {
+                printf("erreur dans module\n");
+            }
             dst[i][j] = sqrtf(real * real + ima * ima);
+        }
+    }
+}
+
+void fmatrix_zero(int length, int width, float ** mat) {
+    for (int i = 0;i < length;i++) {
+        for (int j = 0;j < width;j++) {
+            mat[i][j] = 0.0;
         }
     }
 }
