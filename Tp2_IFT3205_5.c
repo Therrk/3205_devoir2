@@ -46,14 +46,10 @@ int main(int argc,char **argv)
     int mask_size= 50;
 
     float** udem1 = LoadImagePgm(NAME_IMG_IN1, &length, &width);
-    float** udem1_backup = fmatrix_allocate_2d(length, width);
     float** udem1_r = fmatrix_allocate_2d(length, width);
     float** udem1_i = fmatrix_allocate_2d(length, width);
-    fmatrix_move(length, width, udem1, udem1_backup);
 
     float** udem2 = LoadImagePgm(NAME_IMG_IN2, &length, &width);
-    float** udem2_backup = fmatrix_allocate_2d(length, width);
-    fmatrix_move(length, width, udem2, udem2_backup);
 
     // les rebords noirs de l'image tournée cause des difficultés lorsqu'on
     // trouve best_theta, on ajoute donc un cadre noir pour rendre les rebords
@@ -125,6 +121,9 @@ int main(int argc,char **argv)
 
     printf("best theta: %f\n", best_theta);
 
+    udem2 = LoadImagePgm(NAME_IMG_IN2, &length, &width);
+    udem1 = LoadImagePgm(NAME_IMG_IN2, &length, &width);
+    
     float** udem2_straight = fmatrix_allocate_2d(length, width);
     float** udem2_r = fmatrix_allocate_2d(length, width);
     float** udem2_i = fmatrix_allocate_2d(length, width);
@@ -132,11 +131,11 @@ int main(int argc,char **argv)
     float** udem2_mod_i = fmatrix_allocate_2d(length, width);
     fmatrix_zero(length, width, udem2_mod_i);
     
-    rotation(length, width, best_theta, udem2_backup, udem2_straight);
+    rotation(length, width, best_theta, udem2, udem2_straight);
     fmatrix_move(length, width, udem2_straight, udem2);
     fmatrix_move(length, width, udem2, udem2_r);
     fmatrix_zero(length, width, udem2_i);
-
+    
     FFTDD(udem2_r, udem2_i, length, width);
 
     Mod(udem2_mod, udem2_r, udem2_i, length, width);
@@ -149,6 +148,8 @@ int main(int argc,char **argv)
 
     float** vector_r = fmatrix_allocate_2d(length,width);
     float** vector_i = fmatrix_allocate_2d(length,width);
+    fmatrix_zero(length, width, vector_r);
+    fmatrix_zero(length, width, vector_i);
 
     MultMatrix(vector_r, vector_i, udem1_r, udem1_i, udem2_r, udem2_i, length, width);
 
@@ -158,16 +159,36 @@ int main(int argc,char **argv)
     }
     }
 
-
     MultMatrix(vector_r, vector_i, vector_r, vector_i, udem2_mod, udem2_mod_i, length, width);
-    // IFFTDD(vector_r, vector_i, length, width);
-    // Recal(vector_r, length, width);
-    // Mult(vector_r, 100, length, width);
-    CenterImg(vector_r, length, width);
-    CenterImg(vector_i, length, width);
+
+    float max =0;
+    int x,y;
+    IFFTDD(vector_r, vector_i, length, width);
+    for (int i = 0; i < length; i++) {
+	for (int j = 0; j < width; j++) {
+	    if (vector_r[i][j]>max){
+	        max = vector_r[i][j]; 
+	        x=i;y=j;
+	    }
+    }
+    }
+
+    for (int i = 0; i < length; i++) {
+	for (int j = 0; j < width; j++) {
+	    if(i==x && j==y){
+	        vector_r[i][j]=255;
+	    }else{
+	        vector_r[i][j]=0;
+	    }
+    }
+    }
+
+    printf("%i\n", x);
+    printf("%i\n", y);
+
     /* //Sauvegarde */
     SaveImagePgm(NAME_IMG_OUT1,vector_r,length, width);
-    SaveImagePgm(NAME_IMG_OUT2,vector_i,length,width);
+    // SaveImagePgm(NAME_IMG_OUT2,vector_i,length,width);
 
      //Commande systeme: VISU */
      strcpy(BufSystVisuImg,NAME_VISUALISER);
