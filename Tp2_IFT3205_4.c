@@ -36,7 +36,7 @@ int main(int argc,char **argv)
 {
     int length,width;
     // On doit convertir en radians
-    float Theta0 = 22.5 / 360.0 * (2.0 * PI);
+    // float Theta0 = 22.5 / 360.0 * (2.0 * PI);
     char BufSystVisuImg[100];
 
     //Constante
@@ -51,7 +51,7 @@ int main(int argc,char **argv)
     float** udem1_mod = fmatrix_allocate_2d(length, width);
     fmatrix_zero(length, width, udem1_mod);
     // On calcule le module de l'image 1 (F)
-    fmatrix_module(length, width, udem1_r, udem1_i, udem1_mod);
+    Mod(udem1_mod, udem1_r, udem1_i,length, width);
 
     float** udem2 = LoadImagePgm(NAME_IMG_IN2, &length, &width);
     
@@ -76,7 +76,7 @@ int main(int argc,char **argv)
         float** udem2_mod = fmatrix_allocate_2d(length, width);
         fmatrix_zero(length, width, udem2_mod);
         //On calcule le module de l'image 1 (F)
-        fmatrix_module(length, width, udem2_r_rot, udem2_i_rot, udem2_mod);
+        Mod(udem2_mod, udem2_r_rot, udem2_i_rot, length, width);
 
         double epsilon = 0.0;
         for (int i = 0;i < length;i++) {
